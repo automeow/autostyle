@@ -12,8 +12,27 @@ class AutostyleTest < Minitest::Test
 
   def test_merge
     style = Autostyle[background: { color: :red }]
-    style[:background].merge!(color: :blue)
-    assert_equal 'background-color: blue', style.render
+    assert_equal 'background-color: blue',
+      style.merge(background: { color: :blue }).render
+    style.merge!(background: { color: :green })
+    assert_equal 'background-color: green', style.render
+    style[:background].merge!(color: :yellow)
+    assert_equal 'background-color: yellow', style.render
+  end
+
+  def test_overwrite
+    style = Autostyle[background: { color: :red }]
+    assert_equal 'background-color: red', style.render
+    style[:background] = :blue
+    assert_equal 'background: blue', style.render
+    style[:background] = { color: :green }
+    assert_equal 'background-color: green', style.render
+  end
+
+  def test_no_key
+    style = Autostyle[margin: '5px']
+    style.merge!(margin: { top: '10px' })
+    assert_equal 'margin: 5px; margin-top: 10px', style.render
   end
 
   def test_never_nil

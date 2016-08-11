@@ -1,8 +1,10 @@
 # Autostyle
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/autostyle`. To experiment with that code, run `bin/console` for an interactive prompt.
+This is a simple gem to make it easier to handle styles for HTML elements.
 
-TODO: Delete this and the text above, and describe your gem
+It treats the styles as a hash, allowing styles to be merged easily.
+
+It responds to to_s, producing CSS output
 
 ## Installation
 
@@ -22,17 +24,35 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+style = Autostyle[background: { color: :red }]
 
-## Development
+# Both of these are equal
+style.merge!(background: { color: :blue })
+style[:background].merge!(color: :blue)
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+# Don't need to worry about nil errors
+style[:text][:size] = '14px'
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+puts "style=\"#{style}\"" # implicitly converted to a string when needed
+# style="background-color: blue; text-size: 14px"
+
+# Merging a value for a style with "children" works as so:
+style.merge!(background: 'no-repeat')
+puts style.to_s # background-color: blue; background: no-repeat; text-size: 14px
+
+# Or you can overwrite it:
+style[:background] = '#ffffff'
+puts style.to_s # text-size: 14px; background: #ffffff
+
+# And with a hash:
+style[:background] = { color: :red }
+puts style.to_s # text-size: 14px; background-color: red
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/autostyle. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/automeow/autostyle.
 
 
 ## License
